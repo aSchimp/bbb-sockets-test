@@ -1,0 +1,8 @@
+{
+  "name": "bbb-sockets-test",
+  "version": "0.0.1",
+  "description": "Experimental NodeJS Socket.IO application for BeagleBone Black",
+  "dependencies": {
+    "express": "^4.10.2"
+  }
+}
