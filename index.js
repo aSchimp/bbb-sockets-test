@@ -17,3 +17,19 @@ io.on('connection', function(socket){
 http.listen(3001, function(){
     console.log('listening on *:3001');
 });
+
+var SerialPort = require("serialport").SerialPort;
+var serialPort = new SerialPort("/dev/ttyO2", {
+    baudrate: 115200
+});
+
+serialPort.on("open", function () {
+  console.log('open');
+  serialPort.on('data', function(data) {
+    console.log('data received: ' + data);
+  });
+  serialPort.write("\x1B", function(err, results) {
+    console.log('err ' + err);
+    console.log('results ' + results);
+  });
+});
