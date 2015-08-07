@@ -26,10 +26,7 @@ var serialPort = new SerialPort("/dev/ttyO2", {
 serialPort.on("open", function () {
   console.log('open');
   serialPort.on('data', function(data) {
-    console.log('data received: ' + data);
-  });
-  serialPort.write("\x1B", function(err, results) {
-    console.log('err ' + err);
-    console.log('results ' + results);
+    console.log('data received: ' + data.toString('hex'));
+    io.emit('lidar raw data', data.toString('hex'));
   });
 });
