@@ -69,7 +69,7 @@ var parsePacket = function(bytes) {
     // speed unit used by the LIDAR is in 64ths of an RPM; we want the speed in RPMs
     var speed = (bytes[2] + (bytes[3]<<8))/64.0;
 
-    var distances [];
+    var distances = [];
     for (var i = 1; i < 5; i++)
         distances.push(parsePacketDataSection(bytes.slice(4*i, 4*i+4)));
 
