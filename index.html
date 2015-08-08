@@ -1,7 +1,9 @@
 <!doctype html>
-<html>
+<html lang="en">
     <head>
-        <title>Socket.IO chat</title>
+        <title>Socket.IO test</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font: 13px Helvetica, Arial; }
@@ -14,7 +16,14 @@
         </style>
     </head>
     <body>
-        <ul id="messages"></ul>
+        <div class="row">
+            <div class="col-md-6">
+                <ul id="messages"></ul>
+            </div>
+            <div class="col-md-6">
+                <div id="packets"></div>
+            </div>
+        </div>
         <form action="">
             <input id="m" autocomplete="off" /><button>Send</button>
         </form>
@@ -29,6 +38,10 @@
             });
             socket.on('lidar raw data', function(msg){
                 $('#messages').append($('<li>').text('raw lidar data: ' + msg));
+            });
+
+            socket.on('lidar packet', function(packet){
+                $('#packets').append($('<p>').text('index: ' + packet.index + '; speed: ' + packet.speed + '; dist1: ' + packet.dist1 + '; packet.dist2: ' + packet.dist2 + '; packet.dist3: ' + packet.dist3 + '; packet.dist4: ' + packet.dist4));
             });
         </script>
     </body>

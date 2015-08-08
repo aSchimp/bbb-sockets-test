@@ -1,6 +1,7 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var lidar = require('./lidar.js')('/dev/ttyO2');
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
@@ -18,15 +19,10 @@ http.listen(3001, function(){
     console.log('listening on *:3001');
 });
 
-var SerialPort = require("serialport").SerialPort;
-var serialPort = new SerialPort("/dev/ttyO2", {
-    baudrate: 115200
+lidar.on('raw data', function(data){
+    io.emit('lidar raw data', data.toString('hex'));
 });
 
-serialPort.on("open", function () {
-  console.log('open');
-  serialPort.on('data', function(data) {
-    console.log('data received: ' + data.toString('hex'));
-    io.emit('lidar raw data', data.toString('hex'));
-  });
+lidar.on('packet', function(packet){
+    io.emit('lidar packet', packet);
 });
