@@ -116,7 +116,7 @@ function Lidar(serialPath) {
                         currentPacketData = [];
                     }
                 }
-            });
+            }
         });
     });
 }
