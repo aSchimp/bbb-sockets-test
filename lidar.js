@@ -77,17 +77,18 @@ var parsePacket = function(bytes) {
 };
 
 function Lidar(serialPath) {
-    this._serialPort = new SerialPort(serialPath, {
+    var self = this;
+    self._serialPort = new SerialPort(serialPath, {
         baudrate: 115200
     });
 
-    this._serialPort.on("open", function () {
+    self._serialPort.on("open", function () {
         console.log('serial port to lidar is open');
 
         var currentPacketData = [];
-        this._serialPort.on('data', function(data) {
+        self._serialPort.on('data', function(data) {
             console.log('data received from lidar: ' + data.toString('hex'));
-            this.emit('raw data', data);
+            self.emit('raw data', data);
 
             data.forEach(function(b){
                 // if we're starting a new packet, but the current byte doesn't mark the beginning of the packet, skip it
@@ -107,7 +108,7 @@ function Lidar(serialPath) {
                             currentPacketData = [];
                     }
                     else {
-                        this.emit('packet', packet);
+                        self.emit('packet', packet);
 
                         // reset currentPacketData
                         currentPacketData = [];
