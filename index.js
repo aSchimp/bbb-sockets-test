@@ -1,7 +1,7 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var lidar = require('./lidar.js')('/dev/ttyO2');
+var Lidar = require('./lidar.js');
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
@@ -19,6 +19,7 @@ http.listen(3001, function(){
     console.log('listening on *:3001');
 });
 
+var lidar = new Lidar('/dev/ttyO2');
 lidar.on('raw data', function(data){
     io.emit('lidar raw data', data.toString('hex'));
 });
