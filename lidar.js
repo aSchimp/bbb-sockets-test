@@ -90,7 +90,9 @@ function Lidar(serialPath) {
             console.log('data received from lidar: ' + data.toString('hex'));
             self.emit('raw data', data);
 
-            data.forEach(function(b){
+            for (var i = 0; i < data.length; i++) {
+                var b = data[i];
+
                 // if we're starting a new packet, but the current byte doesn't mark the beginning of the packet, skip it
                 if (currentPacketData.length === 0 && b != 0xFA)
                     return;
