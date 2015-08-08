@@ -95,7 +95,7 @@ function Lidar(serialPath) {
 
                 // if we're starting a new packet, but the current byte doesn't mark the beginning of the packet, skip it
                 if (currentPacketData.length === 0 && b != 0xFA)
-                    return;
+                    continue;
 
                 currentPacketData.push(b);
 
@@ -103,8 +103,8 @@ function Lidar(serialPath) {
                     var packet = parsePacket(currentPacketData);
                     if (packet === null) {
                         // packet was invalid; check for 0xFA packet start marker in the last packet, as sometimes some bytes are dropped and the next packet is already started
-                        var nextIndex = currentPacketData.slice(1).indexOf(0xFA);
-                        if (nextIndex !== -1)
+                        var nextIndex = currentPacketData.slice(1).indexOf(0xFA) + 1;
+                        if (nextIndex > 0)
                             currentPacketData = currentPacketData.slice(nextIndex);
                         else
                             currentPacketData = [];
