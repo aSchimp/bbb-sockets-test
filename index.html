@@ -18,7 +18,8 @@
     <body>
         <div class="row">
             <div class="col-md-6">
-                <ul id="messages"></ul>
+                <!--<ul id="messages"></ul>-->
+                <canvas id="map" width="600" height="600"></canvas>
             </div>
             <div class="col-md-6">
                 <div id="packets"></div>
@@ -36,13 +37,37 @@
                 $('#m').val('');
                 return false;
             });
-            socket.on('lidar raw data', function(msg){
-                $('#messages').append($('<li>').text('raw lidar data: ' + msg));
-            });
+            //socket.on('lidar raw data', function(msg){
+            //    $('#messages').append($('<li>').text('raw lidar data: ' + msg));
+            //});
 
+            var canvas = document.getElementById('map');
+            var ctx = canvas.getContext('2d');
+            ctx.fillStyle = "rgb(0,0,0)";
+
+            var packetBuffer = [];
             socket.on('lidar packet', function(packet){
                 $('#packets').append($('<p>').text('index: ' + packet.index + '; speed: ' + packet.speed + '; dist1: ' + packet.dist1 + '; packet.dist2: ' + packet.dist2 + '; packet.dist3: ' + packet.dist3 + '; packet.dist4: ' + packet.dist4));
+
+                if (packet.index === 0 && packetBuffer.length > 0) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    for (var i = 0; i < packetBuffer; i++) {
+                         drawDot(ctx, 300, 300, packetBuffer[i].dist1, packetBuffer[i].index * 4);
+                         drawDot(ctx, 300, 300, packetBuffer[i].dist2, (packetBuffer[i].index * 4) + 1);
+                         drawDot(ctx, 300, 300, packetBuffer[i].dist3, (packetBuffer[i].index * 4) + 2);
+                         drawDot(ctx, 300, 300, packetBuffer[i].dist4, (packetBuffer[i].index * 4) + 3);
+                    }
+                }
+
+                packetBuffer.push(packet);
             });
+
+            var drawDot = function (ctx, cx, cy, dist, theta) {
+                var x = cx + dist * Math.cos(theta);
+                var y = cy - dist * Math.sin(theta);
+                ctx.fillRect(x, y, 1, 1);
+            };
         </script>
     </body>
 </html>
