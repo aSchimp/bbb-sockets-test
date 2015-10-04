@@ -71,10 +71,10 @@
 
             var drawDot = function (ctx, cx, cy, dist, theta) {
                 // transform distance
-                dist = dist / 100;
+                dist = dist / 10;
 
-                var x = cx + dist * Math.cos(theta);
-                var y = cy - dist * Math.sin(theta);
+                var x = cx + dist * Math.cos(theta * Math.PI / 180);
+                var y = cy - dist * Math.sin(theta * Math.PI / 180);
                 ctx.fillRect(x, y, 1, 1);
             };
         </script>
