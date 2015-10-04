@@ -130,7 +130,7 @@ function Lidar(serialPath, pwmPath) {
     var rpmAdjustInProgress = false;
     self.on('packet', function(packet) {
 
-        if (rpm.index != 0){
+        if (packet.index != 0){
             return;
         }
 
