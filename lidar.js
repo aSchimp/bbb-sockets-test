@@ -1,6 +1,8 @@
 var util = require('util');
 var events = require('events');
 var SerialPort = require("serialport").SerialPort;
+var fs = require('fs');
+var path = require('path');
 
 function LidarPacket(index, speed, dist1, dist2, dist3, dist4){
     this.index = index;
@@ -76,8 +78,9 @@ var parsePacket = function(bytes) {
     return new LidarPacket(index, speed, distances[0], distances[1], distances[2], distances[3]);
 };
 
-function Lidar(serialPath) {
+function Lidar(serialPath, pwmPath) {
     var self = this;
+    self._pwmPath = pwmPath;
     self._serialPort = new SerialPort(serialPath, {
         baudrate: 115200
     });
@@ -120,6 +123,33 @@ function Lidar(serialPath) {
         });
     });
 }
+
+Lidar.prototype._sendPwmCommand = function (name, value) {
+    var self = this;
+    fs.writeFile(path.join(self._pwmPath, name), value, function(err) {
+        if (err) {
+            console.log('An error occurred sending pwm command \'' + name + '\' with value \'' + value + '\'. ' + err);
+        }
+    });
+};
+
+Lidar.prototype.start = function () {
+    var self = this;
+
+    console.log('Lidar starting.');
+
+    self._sendPwmCommand('period', '1000000');
+    self._sendPwmCommand('duty', '380000');
+    self._sendPwmCommand('run', '1');
+};
+
+Lidar.prototype.stop = function () {} {
+    var self = this;
+
+    console.log('Lidar stopping.');
+
+    self._sendPwmCommand('run', '0');
+};
 
 // Inherit the EventEmitter
 util.inherits(Lidar, events.EventEmitter);
