@@ -48,6 +48,10 @@ var parsePacketDataSection = function(bytes) {
     if (bytes[1] & 128 === 128)
         return -1;
 
+    // check strength warning bit
+    if (bytes[1] & 64 === 64)
+        return -2;
+
     // get distance from byte 0 and byte 1; byte 2 and byte 3 contain signal strength data, which we are ignoring for now
     return bytes[0] + ((bytes[1] & 63) << 8);
 };
