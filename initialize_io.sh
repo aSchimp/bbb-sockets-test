@@ -6,7 +6,7 @@ cd /sys/devices/bone_capemgr.*
 echo BB-UART2 > slots
 
 # PWM pin for LIDAR motor
-echo am3xx_pwm > slots
+echo am33xx_pwm > slots
 echo bone_pwm_P9_14 > slots
 
 # set baud rate for LIDAR serial port
