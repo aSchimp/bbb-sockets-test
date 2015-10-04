@@ -9,7 +9,7 @@ app.get('/', function(req, res){
 
 var lidar = new Lidar('/dev/ttyO2', '/sys/devices/ocp.*/pwm_test_P9_14.*');
 lidar.on('raw data', function(data){
-    io.emit('lidar raw data', data.toString('hex'));
+    //io.emit('lidar raw data', data.toString('hex'));
 });
 
 lidar.on('packet', function(packet){

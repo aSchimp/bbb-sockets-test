@@ -92,7 +92,7 @@ function Lidar(serialPath, pwmPath) {
 
         var currentPacketData = [];
         self._serialPort.on('data', function(data) {
-            console.log('data received from lidar: ' + data.toString('hex'));
+            //console.log('data received from lidar: ' + data.toString('hex'));
             self.emit('raw data', data);
 
             for (var i = 0; i < data.length; i++) {
@@ -189,6 +189,10 @@ Lidar.prototype.start = function () {
     var self = this;
 
     console.log('Lidar starting.');
+
+    if (self._pwmDuty > 1000000) {
+        self._pwmDuty = 380000;
+    }
 
     self._sendPwmCommand('period', '1000000');
     self._sendPwmCommand('duty', self._pwmDuty.toString());
