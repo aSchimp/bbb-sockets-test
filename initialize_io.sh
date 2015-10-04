@@ -13,4 +13,5 @@ echo bone_pwm_P9_14 > slots
 stty -F /dev/ttyO2 115200
 
 # ensure lidar pwm is off
-echo 0 > /sys/devices/ocp.*/pwm_test_P9_14.*/run
+cd /sys/devices/ocp.*/pwm_test_P9_14.*
+echo 0 > run

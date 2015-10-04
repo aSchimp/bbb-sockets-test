@@ -3,6 +3,7 @@ var events = require('events');
 var SerialPort = require("serialport").SerialPort;
 var fs = require('fs');
 var path = require('path');
+var glob = require('glob');
 
 function LidarPacket(index, speed, dist1, dist2, dist3, dist4){
     this.index = index;
@@ -126,10 +127,22 @@ function Lidar(serialPath, pwmPath) {
 
 Lidar.prototype._sendPwmCommand = function (name, value) {
     var self = this;
-    fs.writeFile(path.join(self._pwmPath, name), value, function(err) {
-        if (err) {
-            console.log('An error occurred sending pwm command \'' + name + '\' with value \'' + value + '\'. ' + err);
+    glob(path.join(self._pwmPath, name), { cwd: '/' }, function(err, files) {
+        if (err || files.length < 1) {
+            console.log('An error occurred sending pwm command \'' + name + '\' with value \'' + value + '\'. Could not resolve the pwm path. ' + err);
+            return;
         }
+
+        if (files.length > 1) {
+            console.log('An error occurred sending pwm command \'' + name + '\' with value \'' + value + '\'. PWM path resolved to more than one location. ' + err);
+            return;
+        }
+
+        fs.writeFile(files[0], value, function(writeError) {
+            if (err) {
+                console.log('An error occurred sending pwm command \'' + name + '\' with value \'' + value + '\'. ' + writeError);
+            }
+        });
     });
 };
 
@@ -143,7 +156,7 @@ Lidar.prototype.start = function () {
     self._sendPwmCommand('run', '1');
 };
 
-Lidar.prototype.stop = function () {} {
+Lidar.prototype.stop = function () {
     var self = this;
 
     console.log('Lidar stopping.');
