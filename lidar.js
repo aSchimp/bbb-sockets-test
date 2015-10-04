@@ -126,7 +126,7 @@ function Lidar(serialPath, pwmPath) {
     });
 
     var targetRPM = 240;
-    var lastRPMs = [];
+    var lastRPM = 0
     var rpmAdjustInProgress = false;
     self.on('packet', function(packet) {
 
@@ -137,12 +137,7 @@ function Lidar(serialPath, pwmPath) {
         var rpm = packet.speed;
         var prevRPM = 0;
 
-        lastRPMs.push(rpm);
-        if (lastRPMs.length >= 30){
-            var prevRPM = lastRPMs.shift();
-        }
-
-        if (rpm > 100 && rpm > targetRPM - 5 && rpm < targetRPM + 5 && prevRPM > 0 && Math.abs(rpm - prevRPM) < 2 && !rpmAdjustInProgress) {
+        if (rpm > 100 && rpm > targetRPM - 5 && rpm < targetRPM + 5 && lastRPM > 0 && Math.abs(rpm - lastRPM) < 3 && !rpmAdjustInProgress) {
             var deltaRPM = targetRPM - rpm;
             var deltaDuty = Math.round((deltaRPM / rpm) * self._pwmDuty * 0.5);
 
@@ -154,8 +149,10 @@ function Lidar(serialPath, pwmPath) {
             console.log('Changed pwm duty to: ' + self._pwmDuty);
         }
 
+        lastRPM = rpm;
+
         if (rpm < 100) {
-            lastRPMs = [];
+            lastRPMs = 0;
         }
     });
 }
