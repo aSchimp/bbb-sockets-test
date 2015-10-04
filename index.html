@@ -52,12 +52,14 @@
                 if (packet.index === 0 && packetBuffer.length > 0) {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    for (var i = 0; i < packetBuffer; i++) {
+                    for (var i = 0; i < packetBuffer.length; i++) {
                          drawDot(ctx, 300, 300, packetBuffer[i].dist1, packetBuffer[i].index * 4);
                          drawDot(ctx, 300, 300, packetBuffer[i].dist2, (packetBuffer[i].index * 4) + 1);
                          drawDot(ctx, 300, 300, packetBuffer[i].dist3, (packetBuffer[i].index * 4) + 2);
                          drawDot(ctx, 300, 300, packetBuffer[i].dist4, (packetBuffer[i].index * 4) + 3);
                     }
+
+                    packetBuffer = [];
                 }
 
                 packetBuffer.push(packet);
