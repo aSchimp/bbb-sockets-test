@@ -12,8 +12,15 @@ lidar.on('raw data', function(data){
     //io.emit('lidar raw data', data.toString('hex'));
 });
 
+var revIndex = 0;
 lidar.on('packet', function(packet){
-    io.emit('lidar packet', packet);
+    if (packet.index === 0) {
+        revIndex++;
+    }
+
+    if (revIndex % 4 === 0) {
+        io.emit('lidar packet', packet);
+    }
 });
 
 io.on('connection', function(socket){
