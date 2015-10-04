@@ -125,6 +125,9 @@ function Lidar(serialPath, pwmPath) {
     });
 }
 
+// Inherit the EventEmitter - this line must be before prototype declarations
+util.inherits(Lidar, events.EventEmitter);
+
 Lidar.prototype._sendPwmCommand = function (name, value) {
     var self = this;
     glob(path.join(self._pwmPath, name), { cwd: '/' }, function(err, files) {
@@ -163,8 +166,5 @@ Lidar.prototype.stop = function () {
 
     self._sendPwmCommand('run', '0');
 };
-
-// Inherit the EventEmitter
-util.inherits(Lidar, events.EventEmitter);
 
 module.exports = Lidar;
