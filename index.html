@@ -53,10 +53,14 @@
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                     for (var i = 0; i < packetBuffer.length; i++) {
-                         drawDot(ctx, 300, 300, packetBuffer[i].dist1, packetBuffer[i].index * 4);
-                         drawDot(ctx, 300, 300, packetBuffer[i].dist2, (packetBuffer[i].index * 4) + 1);
-                         drawDot(ctx, 300, 300, packetBuffer[i].dist3, (packetBuffer[i].index * 4) + 2);
-                         drawDot(ctx, 300, 300, packetBuffer[i].dist4, (packetBuffer[i].index * 4) + 3);
+                        if (packetBuffer[i].dist1 >= 0)
+                            drawDot(ctx, 300, 300, packetBuffer[i].dist1, packetBuffer[i].index * 4);
+                        if (packetBuffer[i].dist2 >= 0)
+                            drawDot(ctx, 300, 300, packetBuffer[i].dist2, (packetBuffer[i].index * 4) + 1);
+                        if (packetBuffer[i].dist3 >= 0)
+                            drawDot(ctx, 300, 300, packetBuffer[i].dist3, (packetBuffer[i].index * 4) + 2);
+                        if (packetBuffer[i].dist4 >= 0)
+                            drawDot(ctx, 300, 300, packetBuffer[i].dist4, (packetBuffer[i].index * 4) + 3);
                     }
 
                     packetBuffer = [];
@@ -66,6 +70,9 @@
             });
 
             var drawDot = function (ctx, cx, cy, dist, theta) {
+                // transform distance
+                dist = dist / 100;
+
                 var x = cx + dist * Math.cos(theta);
                 var y = cy - dist * Math.sin(theta);
                 ctx.fillRect(x, y, 1, 1);
