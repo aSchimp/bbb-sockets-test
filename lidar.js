@@ -45,11 +45,11 @@ var computeChecksum = function(data) {
  */
 var parsePacketDataSection = function(bytes) {
     // if the 8th bit of the byte 1 is set, the data is invalid; the 7th bit of byte 1 is a strength warning (varies with material sometimes) flag, but we are ignoring it for now
-    if (bytes[1] & 128 === 128)
+    if ((bytes[1] & 128) === 128)
         return -1;
 
     // check strength warning bit
-    if (bytes[1] & 64 === 64)
+    if ((bytes[1] & 64) === 64)
         return -2;
 
     // get distance from byte 0 and byte 1; byte 2 and byte 3 contain signal strength data, which we are ignoring for now
