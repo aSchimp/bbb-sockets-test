@@ -82,6 +82,7 @@ var parsePacket = function(bytes) {
 function Lidar(serialPath, pwmPath) {
     var self = this;
     self._pwmPath = pwmPath;
+    self._pwmDuty = 380000;
     self._serialPort = new SerialPort(serialPath, {
         baudrate: 115200
     });
@@ -123,6 +124,31 @@ function Lidar(serialPath, pwmPath) {
             }
         });
     });
+
+    var targetRPM = 240;
+    var lastRPMs = [];
+    self.on('packet', function(packet) {
+        var rpm = packet.speed;
+        var prevRPM = 0;
+
+        lastRPMs.push(rpm);
+        if (lastRPMs.length >= 30){
+            var prevRPM = lastRPMs.shift();
+        }
+
+        if (rpm > 100 && rpm > targetRPM - 5 && rpm < targetRPM + 5 && prevRPM > 0 && Math.abs(rpm - prevRPM) < 1.5) {
+            var deltaRPM = targetRPM - rpm;
+            var deltaDuty = (deltaRPM / rpm) * self._pwmDuty * 0.5;
+
+            self._pwmDuty += deltaDuty;
+
+            console.log('Changed pwm duty to: ' + self._pwmDuty);
+        }
+
+        if (rpm < 100) {
+            lastRPMs = [];
+        }
+    });
 }
 
 // Inherit the EventEmitter - this line must be before prototype declarations
@@ -149,16 +175,18 @@ Lidar.prototype._sendPwmCommand = function (name, value) {
     });
 };
 
+// turns on the lidar motor
 Lidar.prototype.start = function () {
     var self = this;
 
     console.log('Lidar starting.');
 
     self._sendPwmCommand('period', '1000000');
-    self._sendPwmCommand('duty', '380000');
+    self._sendPwmCommand('duty', self._pwmDuty.toString());
     self._sendPwmCommand('run', '1');
 };
 
+// turns off the lidar motor
 Lidar.prototype.stop = function () {
     var self = this;
 
