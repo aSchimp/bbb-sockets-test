@@ -82,6 +82,7 @@ var parsePacket = function(bytes) {
 function Lidar(serialPath, pwmPath) {
     var self = this;
     self._pwmPath = pwmPath;
+    self._lidarStopped = true;
     self._pwmDuty = 380000;
     self._serialPort = new SerialPort(serialPath, {
         baudrate: 115200
@@ -130,23 +131,25 @@ function Lidar(serialPath, pwmPath) {
     var rpmAdjustInProgress = false;
     self.on('packet', function(packet) {
 
-        if (packet.index != 0){
+        if (packet.index != 0 || self._lidarStopped){
             return;
         }
 
         var rpm = packet.speed;
         var prevRPM = 0;
 
-        if (rpm > 100 && rpm > targetRPM - 5 && rpm < targetRPM + 5 && lastRPM > 0 && Math.abs(rpm - lastRPM) < 3 && !rpmAdjustInProgress) {
+        if (rpm > 100 && (rpm < targetRPM - 5 || rpm > targetRPM + 5) && lastRPM > 0 && Math.abs(rpm - lastRPM) < 3 && !rpmAdjustInProgress) {
             var deltaRPM = targetRPM - rpm;
             var deltaDuty = Math.round((deltaRPM / rpm) * self._pwmDuty * 0.5);
 
-            self._pwmDuty += deltaDuty;
+            self._pwmDuty -= deltaDuty;
+            self._sendPwmCommand('duty', self._pwmDuty.toString());
 
             rpmAdjustInProgress = true;
             setTimeout(function(){ rpmAdjustInProgress = false; }, 3000);
 
             console.log('Changed pwm duty to: ' + self._pwmDuty);
+            console.log('Current rpms: ' + rpm);
         }
 
         lastRPM = rpm;
@@ -194,6 +197,8 @@ Lidar.prototype.start = function () {
     self._sendPwmCommand('period', '1000000');
     self._sendPwmCommand('duty', self._pwmDuty.toString());
     self._sendPwmCommand('run', '1');
+
+    self._lidarStopped = false;
 };
 
 // turns off the lidar motor
@@ -203,6 +208,8 @@ Lidar.prototype.stop = function () {
     console.log('Lidar stopping.');
 
     self._sendPwmCommand('run', '0');
+
+    self._lidarStopped = true;
 };
 
 module.exports = Lidar;
