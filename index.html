@@ -45,28 +45,28 @@
             var ctx = canvas.getContext('2d');
             ctx.fillStyle = "rgb(0,0,0)";
 
-            var packetBuffer = [];
-            socket.on('lidar packet', function(packet){
-                $('#packets').append($('<p>').text('index: ' + packet.index + '; speed: ' + packet.speed + '; dist1: ' + packet.dist1 + '; packet.dist2: ' + packet.dist2 + '; packet.dist3: ' + packet.dist3 + '; packet.dist4: ' + packet.dist4));
+            //var packetBuffer = [];
+            socket.on('lidar packet group', function(packetGroup){
+                //$('#packets').append($('<p>').text('index: ' + packet.index + '; speed: ' + packet.speed + '; dist1: ' + packet.dist1 + '; packet.dist2: ' + packet.dist2 + '; packet.dist3: ' + packet.dist3 + '; packet.dist4: ' + packet.dist4));
 
-                if (packet.index === 0 && packetBuffer.length > 0) {
+                //if (packet.index === 0 && packetBuffer.length > 0) {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    for (var i = 0; i < packetBuffer.length; i++) {
-                        if (packetBuffer[i].dist1 >= 0)
-                            drawDot(ctx, 300, 300, packetBuffer[i].dist1, packetBuffer[i].index * 4);
-                        if (packetBuffer[i].dist2 >= 0)
-                            drawDot(ctx, 300, 300, packetBuffer[i].dist2, (packetBuffer[i].index * 4) + 1);
-                        if (packetBuffer[i].dist3 >= 0)
-                            drawDot(ctx, 300, 300, packetBuffer[i].dist3, (packetBuffer[i].index * 4) + 2);
-                        if (packetBuffer[i].dist4 >= 0)
-                            drawDot(ctx, 300, 300, packetBuffer[i].dist4, (packetBuffer[i].index * 4) + 3);
+                    for (var i = 0; i < packetGroup.length; i++) {
+                        if (packetGroup[i].dist1 >= 0)
+                            drawDot(ctx, 300, 300, packetGroup[i].dist1, packetGroup[i].index * 4);
+                        if (packetGroup[i].dist2 >= 0)
+                            drawDot(ctx, 300, 300, packetGroup[i].dist2, (packetGroup[i].index * 4) + 1);
+                        if (packetGroup[i].dist3 >= 0)
+                            drawDot(ctx, 300, 300, packetGroup[i].dist3, (packetGroup[i].index * 4) + 2);
+                        if (packetGroup[i].dist4 >= 0)
+                            drawDot(ctx, 300, 300, packetGroup[i].dist4, (packetGroup[i].index * 4) + 3);
                     }
 
-                    packetBuffer = [];
-                }
+                    //packetBuffer = [];
+                //}
 
-                packetBuffer.push(packet);
+                //packetBuffer.push(packet);
             });
 
             var drawDot = function (ctx, cx, cy, dist, theta) {

@@ -13,13 +13,20 @@ lidar.on('raw data', function(data){
 });
 
 var revIndex = 0;
+var packetGroup = [];
 lidar.on('packet', function(packet){
     if (packet.index === 0) {
         revIndex++;
+
+        if (packetGroup.length > 0) {
+            io.emit('lidar packet group', packet);
+        }
+
+        packetGroup = [];
     }
 
-    if (revIndex % 4 === 0) {
-        io.emit('lidar packet', packet);
+    if (revIndex % 2 === 0) {
+        packetGroup.push(packet);
     }
 });
 
