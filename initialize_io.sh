@@ -1,4 +1,5 @@
 #!/bin/bash
+shopt -s extglob
 
 cd /sys/devices/bone_capemgr.*
 
