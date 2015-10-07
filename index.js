@@ -14,8 +14,9 @@ lidar.on('raw data', function(data){
 
 var revIndex = 0;
 var packetGroup = [];
+var lastPacketIndex = 90;
 lidar.on('packet', function(packet){
-    if (packet.index === 0) {
+    if (packet.index <= lastPacketIndex) {
         revIndex++;
 
         if (packetGroup.length > 0) {
@@ -28,6 +29,8 @@ lidar.on('packet', function(packet){
     if (revIndex % 2 === 0) {
         packetGroup.push(packet);
     }
+
+    lastPacketIndex = packet.index;
 });
 
 io.on('connection', function(socket){
