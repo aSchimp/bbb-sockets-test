@@ -19,7 +19,7 @@ lidar.on('packet', function(packet){
         revIndex++;
 
         if (packetGroup.length > 0) {
-            io.emit('lidar packet group', packet);
+            io.emit('lidar packet group', packetGroup);
         }
 
         packetGroup = [];
