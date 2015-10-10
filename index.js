@@ -2,6 +2,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Lidar = require('./lidar.js');
+var BiDirMotor = require('./biDirMotor.js');
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
@@ -11,6 +12,8 @@ var lidar = new Lidar('/dev/ttyO2', '/sys/devices/ocp.*/pwm_test_P9_14.*');
 lidar.on('raw data', function(data){
     //io.emit('lidar raw data', data.toString('hex'));
 });
+
+var leftMotor = new BiDirMotor('/sys/devices/ocp.*/pwm_test_P8_45.*', '/sys/class/gpio/gpio74', '/sys/class/gpio/gpio75');
 
 var revIndex = 0;
 var packetGroup = [];
@@ -39,13 +42,23 @@ io.on('connection', function(socket){
   socket.on('chat message', function(msg){
     console.log('message: ' + msg);
 
+    var msgParts = msg.split(' ');
+
     // check for command messages
-    switch (msg) {
+    switch (msgParts[0]) {
         case 'lidarstart':
             lidar.start();
             break;
         case 'lidarstop':
             lidar.stop();
+            break;
+        case 'leftmotor':
+            if (msgParts.length > 1) {
+                var rotationVal = parseFloat(msgParts[1]);
+                if (rotationVal !== NaN) {
+                    leftMotor.setRotation(rotationVal);
+                }
+            }
             break;
     }
   });

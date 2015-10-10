@@ -1,9 +1,7 @@
 var util = require('util');
 var events = require('events');
 var SerialPort = require("serialport").SerialPort;
-var fs = require('fs');
-var path = require('path');
-var glob = require('glob');
+var ioHelper = require('./ioHelper.js');
 
 function LidarPacket(index, speed, dist1, dist2, dist3, dist4){
     this.index = index;
@@ -147,7 +145,7 @@ function Lidar(serialPath, pwmPath) {
             var deltaDuty = Math.round((deltaRPM / rpm) * self._pwmDuty * 0.5);
 
             self._pwmDuty -= deltaDuty;
-            self._sendPwmCommand('duty', self._pwmDuty.toString());
+            ioHelper.sendPwmCommand(self._pwmPath, 'duty', self._pwmDuty.toString());
 
             rpmAdjustInProgress = true;
             setTimeout(function(){ rpmAdjustInProgress = false; }, 3000);
@@ -167,27 +165,6 @@ function Lidar(serialPath, pwmPath) {
 // Inherit the EventEmitter - this line must be before prototype declarations
 util.inherits(Lidar, events.EventEmitter);
 
-Lidar.prototype._sendPwmCommand = function (name, value) {
-    var self = this;
-    glob(path.join(self._pwmPath, name), { cwd: '/' }, function(err, files) {
-        if (err || files.length < 1) {
-            console.log('An error occurred sending pwm command \'' + name + '\' with value \'' + value + '\'. Could not resolve the pwm path. ' + err);
-            return;
-        }
-
-        if (files.length > 1) {
-            console.log('An error occurred sending pwm command \'' + name + '\' with value \'' + value + '\'. PWM path resolved to more than one location. ' + err);
-            return;
-        }
-
-        fs.writeFile(files[0], value, function(writeError) {
-            if (err) {
-                console.log('An error occurred sending pwm command \'' + name + '\' with value \'' + value + '\'. ' + writeError);
-            }
-        });
-    });
-};
-
 // turns on the lidar motor
 Lidar.prototype.start = function () {
     var self = this;
@@ -198,9 +175,9 @@ Lidar.prototype.start = function () {
         self._pwmDuty = 380000;
     }
 
-    self._sendPwmCommand('period', '1000000');
-    self._sendPwmCommand('duty', self._pwmDuty.toString());
-    self._sendPwmCommand('run', '1');
+    ioHelper.sendPwmCommand(self._pwmPath, 'period', '1000000');
+    ioHelper.sendPwmCommand(self._pwmPath, 'duty', self._pwmDuty.toString());
+    ioHelper.sendPwmCommand(self._pwmPath, 'run', '1');
 
     self._lidarStopped = false;
 };
@@ -211,7 +188,7 @@ Lidar.prototype.stop = function () {
 
     console.log('Lidar stopping.');
 
-    self._sendPwmCommand('run', '0');
+    ioHelper.sendPwmCommand(self._pwmPath, 'run', '0');
 
     self._lidarStopped = true;
 };
