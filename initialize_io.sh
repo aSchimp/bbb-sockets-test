@@ -16,6 +16,9 @@ echo bone_pwm_P8_45 > slots
 # PWM pin for right drive motor
 echo bone_pwm_P9_29 > slots
 
+# sleep for a bit to allow time for the pwm slots to be set up
+sleep 1s
+
 # set baud rate for LIDAR serial port
 stty -F /dev/ttyO2 115200
 
