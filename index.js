@@ -14,6 +14,7 @@ lidar.on('raw data', function(data){
 });
 
 var leftMotor = new BiDirMotor('/sys/devices/ocp.*/pwm_test_P8_45.*', '/sys/class/gpio/gpio74', '/sys/class/gpio/gpio75');
+var rightMotor = new BiDirMotor('/sys/devices/ocp.*/pwm_test_P9_29.*', '/sys/class/gpio/gpio72', '/sys/class/gpio/gpio73');
 
 var revIndex = 0;
 var packetGroup = [];
@@ -37,31 +38,39 @@ lidar.on('packet', function(packet){
 });
 
 io.on('connection', function(socket){
-  console.log('a user connected');
+    console.log('a user connected');
 
-  socket.on('chat message', function(msg){
-    console.log('message: ' + msg);
+    socket.on('chat message', function(msg){
+        console.log('message: ' + msg);
 
-    var msgParts = msg.split(' ');
+        var msgParts = msg.split(' ');
 
-    // check for command messages
-    switch (msgParts[0]) {
-        case 'lidarstart':
-            lidar.start();
-            break;
-        case 'lidarstop':
-            lidar.stop();
-            break;
-        case 'leftmotor':
-            if (msgParts.length > 1) {
-                var rotationVal = parseFloat(msgParts[1]);
-                if (rotationVal !== NaN) {
-                    leftMotor.setRotation(rotationVal);
+        // check for command messages
+        switch (msgParts[0]) {
+            case 'lidarstart':
+                lidar.start();
+                break;
+            case 'lidarstop':
+                lidar.stop();
+                break;
+            case 'leftmotor':
+                if (msgParts.length > 1) {
+                    var rotationVal = parseFloat(msgParts[1]);
+                    if (rotationVal !== NaN) {
+                        leftMotor.setRotation(rotationVal);
+                    }
                 }
-            }
-            break;
-    }
-  });
+                break;
+            case 'rightmotor':
+                if (msgParts.length > 1) {
+                    var rotationVal = parseFloat(msgParts[1]);
+                    if (rotationVal !== NaN) {
+                        rightMotor.setRotation(rotationVal);
+                    }
+                }
+                break;
+        }
+    });
 });
 
 http.listen(3001, function(){

@@ -29,7 +29,7 @@ BiDirMotor.prototype.setRotation = function(value) {
         return;
     }
 
-    var duty = (1 - Math.min(Math.max(Math.abs(value), dutyCycleMin), dutyCycleMax)) * period;
+    var duty = Math.round((1 - Math.min(Math.max(Math.abs(value), dutyCycleMin), dutyCycleMax)) * period);
     ioHelper.sendPwmCommand(self._pwmPath, 'period', period.toString());
     ioHelper.sendPwmCommand(self._pwmPath, 'duty', duty.toString());
     ioHelper.sendPwmCommand(self._pwmPath, 'run', '1');
