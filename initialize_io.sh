@@ -10,11 +10,11 @@ echo BB-UART2 > slots
 echo am33xx_pwm > slots
 echo bone_pwm_P9_14 > slots
 
-#PWM pin for left drive motor
+# PWM pin for left drive motor
 echo bone_pwm_P8_45 > slots
 
-#PWM pin for right drive motor
-echo bone_pwm_P8_46 > slots
+# PWM pin for right drive motor
+echo bone_pwm_P9_29 > slots
 
 # set baud rate for LIDAR serial port
 stty -F /dev/ttyO2 115200
@@ -26,7 +26,7 @@ echo 0 > run
 # ensure drive motors are off
 cd /sys/devices/ocp.*/pwm_test_P8_45.*
 echo 0 > run
-cd /sys/devices/ocp.*/pwm_test_P8_46.*
+cd /sys/devices/ocp.*/pwm_test_P9_29.*
 echo 0 > run
 
 # gpio pins for drive motors
