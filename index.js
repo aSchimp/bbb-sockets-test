@@ -3,6 +3,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Lidar = require('./lidar.js');
 var BiDirMotor = require('./biDirMotor.js');
+var DriveSystem = require('./driveSystem.js');
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
@@ -15,6 +16,7 @@ lidar.on('raw data', function(data){
 
 var leftMotor = new BiDirMotor('/sys/devices/ocp.*/pwm_test_P8_45.*', '/sys/class/gpio/gpio74', '/sys/class/gpio/gpio75');
 var rightMotor = new BiDirMotor('/sys/devices/ocp.*/pwm_test_P9_29.*', '/sys/class/gpio/gpio72', '/sys/class/gpio/gpio73');
+var driveSystem = new DriveSystem(leftMotor, rightMotor);
 
 var revIndex = 0;
 var packetGroup = [];
@@ -53,21 +55,27 @@ io.on('connection', function(socket){
             case 'lidarstop':
                 lidar.stop();
                 break;
-            case 'leftmotor':
+            case 'f':
                 if (msgParts.length > 1) {
-                    var rotationVal = parseFloat(msgParts[1]);
-                    if (rotationVal !== NaN) {
-                        leftMotor.setRotation(rotationVal);
+                    var val = parseFloat(msgParts[1]);
+                    if (val !== NaN) {
+                        driveSystem.moveStraight(val);
+                    }
+                }
+                else {
+                    driveSystem.moveStraight(0.2);
+                }
+                break;
+            case 'r':
+                if (msgParts.length > 1) {
+                    var val = parseFloat(msgParts[1]);
+                    if (val !== NaN) {
+                        driveSystem.rotate(val);
                     }
                 }
                 break;
-            case 'rightmotor':
-                if (msgParts.length > 1) {
-                    var rotationVal = parseFloat(msgParts[1]);
-                    if (rotationVal !== NaN) {
-                        rightMotor.setRotation(rotationVal);
-                    }
-                }
+            case 'stop':
+                driveSystem.stop();
                 break;
         }
     });

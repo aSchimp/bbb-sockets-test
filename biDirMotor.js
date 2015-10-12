@@ -4,7 +4,7 @@ var glob = require('glob');
 var ioHelper = require('./ioHelper.js');
 
 // constants
-var dutyCycleMin = 0.3;
+var dutyCycleMin = 0.1;
 var dutyCycleMax = 0.7;
 var period = 1000000;
 
