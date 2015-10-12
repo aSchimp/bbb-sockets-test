@@ -20,6 +20,7 @@ DriveSystem.prototype.turn = function (speed, radius) {
 };
 
 DriveSystem.prototype.rotate = function (speed) {
+    var self = this;
     self._leftMotor.setRotation(speed);
     self._rightMotor.setRotation(speed);
 };
