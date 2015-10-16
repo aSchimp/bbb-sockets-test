@@ -19,6 +19,12 @@
         <div class="row">
             <div class="col-md-6">
                 <!--<ul id="messages"></ul>-->
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="robotSpeed">Speed (0 to 1)</label>
+                        <input type="text" class="form-control" id="robotSpeed" value="0.2" />
+                    </div>
+                </div>
                 <canvas id="map" width="600" height="600"></canvas>
             </div>
             <div class="col-md-6">
@@ -37,6 +43,35 @@
                 $('#m').val('');
                 return false;
             });
+
+            // handle key down events for robot movement
+            $(document).keydown(function(e) {
+                switch(e.which) {
+                    case 37: // left
+                        socket.emit('drive cmd', { cmd: 'rotate', value: -0.2 });
+                        break;
+
+                    case 38: // up
+                        socket.emit('drive cmd', { cmd: 'move', value: Math.abs(parseFloat($('#robotSpeed').val() || '0.2')) });
+                        break;
+
+                    case 39: // right
+                        socket.emit('drive cmd', { cmd: 'rotate', value: -0.2 });
+                        break;
+
+                    case 40: // down
+                        socket.emit('drive cmd', { cmd: 'move', value: -0.15 });
+                        break;
+
+                    case 32: // space
+                        socket.emit('drive cmd', { cmd: 'stop' });
+                        break;
+
+                    default: return; // exit this handler for other keys
+                }
+                e.preventDefault(); // prevent the default action (scroll / move caret)
+            });
+
             //socket.on('lidar raw data', function(msg){
             //    $('#messages').append($('<li>').text('raw lidar data: ' + msg));
             //});

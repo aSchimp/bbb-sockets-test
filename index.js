@@ -55,24 +55,16 @@ io.on('connection', function(socket){
             case 'lidarstop':
                 lidar.stop();
                 break;
-            case 'f':
-                if (msgParts.length > 1) {
-                    var val = parseFloat(msgParts[1]);
-                    if (val !== NaN) {
-                        driveSystem.moveStraight(val);
-                    }
-                }
-                else {
-                    driveSystem.moveStraight(0.2);
-                }
+        }
+    });
+
+    socket.on('drive cmd', function (data) {
+        switch (data.cmd) {
+            case 'move':
+                driveSystem.moveStraight(data.value);
                 break;
-            case 'r':
-                if (msgParts.length > 1) {
-                    var val = parseFloat(msgParts[1]);
-                    if (val !== NaN) {
-                        driveSystem.rotate(val);
-                    }
-                }
+            case 'rotate':
+                driveSystem.rotate(data.value);
                 break;
             case 'stop':
                 driveSystem.stop();
